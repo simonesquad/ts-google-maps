@@ -7,6 +7,7 @@ const API_KEY = process.env.GOOGLE_API_KEY
 
 type GoogleGeocodingResponse = {
     results: {geometry: {location: {lat: number, lng: number}}}[];
+    status: 'OK' | 'ZERO_RESULTS';
 };
 
 function searchAddressHandler(event: Event) {
@@ -19,6 +20,9 @@ function searchAddressHandler(event: Event) {
     )}&key=${API_KEY}`
     )
     .then(response => {
+        if (response.data.status !== 'OK') {
+            throw new Error("Could not fetch location!");
+        }
         const coordinates = response.data.results[0].geometry.location;
     })
     .catch(err => {
